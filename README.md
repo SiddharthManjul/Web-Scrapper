@@ -162,13 +162,13 @@ StartTime: A variable that should have been defined elsewhere in the code, repre
 
 **5. Send({ ... })**
 Send: Likely a function to send a message or response back to the sender.
-The message being sent includes:
-Target: The recipient of the message, taken from the From tag of the incoming message.
-Tags: A table (or object) containing:
-Recipient: The recipient of the stream, taken from the incoming message.
-Quantity: The quantity of the stream, taken from the incoming message.
-StartTime: The start time of the stream, presumably set elsewhere in the code.
-EndTime: The end time of the stream, calculated as StartTime + 3600 seconds (1 hour after the start time).
+The message being sent includes: <br />
+Target: The recipient of the message, taken from the From tag of the incoming message.<br />
+Tags: A table (or object) containing:<br />
+Recipient: The recipient of the stream, taken from the incoming message.<br />
+Quantity: The quantity of the stream, taken from the incoming message.<br />
+StartTime: The start time of the stream, presumably set elsewhere in the code.<br />
+EndTime: The end time of the stream, calculated as StartTime + 3600 seconds (1 hour after the start time).<br />
 Data: A message string saying 'Successfully Created Stream!'.
 
 **6. print(Colors.green .. "You have created a stream.")**

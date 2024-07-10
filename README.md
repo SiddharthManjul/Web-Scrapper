@@ -55,3 +55,69 @@ Balances Handler provides the entire Balance Table
 Handlers.add('balances', Handlers.utils.hasMatchingTag('Action', 'Balances'),
              function(msg) ao.send({ Target = msg.From, Data = json.encode(Balances) }) end)
 ```
+#### Transfer Handler:
+This Handler performs the Transfer Action to transfer token from sender to receiver.
+```Lua
+Handlers.add('transfer', Handlers.utils.hasMatchingTag('Action', 'Transfer'), function(msg)
+  assert(type(msg.Tags.Recipient) == 'string', 'Recipient is required!')
+  assert(type(msg.Tags.Quantity) == 'string', 'Quantity is required!')
+
+  if not Balances[msg.From] then Balances[msg.From] = 0 end
+
+  if not Balances[msg.Tags.Recipient] then Balances[msg.Tags.Recipient] = 0 end
+
+  local qty = tonumber(msg.Tags.Quantity)
+  assert(type(qty) == 'number', 'qty must be number')
+
+  if Balances[msg.From] >= qty then
+    Balances[msg.From] = Balances[msg.From] - qty
+    Balances[msg.Tags.Recipient] = Balances[msg.Tags.Recipient] + qty
+
+    --[[
+      Only Send the notifications to the Sender and Recipient
+      if the Cast tag is not set on the Transfer message
+    ]] --
+    if not msg.Tags.Cast then
+      -- Debit-Notice message template, that is sent to the Sender of the transfer
+      local debitNotice = {
+        Target = msg.From,
+        Action = 'Debit-Notice',
+        Recipient = msg.Recipient,
+        Quantity = tostring(qty),
+        Data = Colors.gray ..
+            "You transferred " ..
+            Colors.blue .. msg.Quantity .. Colors.gray .. " to " .. Colors.green .. msg.Recipient .. Colors.reset
+      }
+      -- Credit-Notice message template, that is sent to the Recipient of the transfer
+      local creditNotice = {
+        Target = msg.Recipient,
+        Action = 'Credit-Notice',
+        Sender = msg.From,
+        Quantity = tostring(qty),
+        Data = Colors.gray ..
+            "You received " ..
+            Colors.blue .. msg.Quantity .. Colors.gray .. " from " .. Colors.green .. msg.From .. Colors.reset
+      }
+
+      -- Add forwarded tags to the credit and debit notice messages
+      for tagName, tagValue in pairs(msg) do
+        -- Tags beginning with "X-" are forwarded
+        if string.sub(tagName, 1, 2) == "X-" then
+          debitNotice[tagName] = tagValue
+          creditNotice[tagName] = tagValue
+        end
+      end
+
+      -- Send Debit-Notice and Credit-Notice
+      ao.send(debitNotice)
+      ao.send(creditNotice)
+    end
+  else
+    ao.send({
+      Target = msg.Tags.From,
+      Tags = { Action = 'Transfer-Error', ['Message-Id'] = msg.Id, Error = 'Insufficient Balance!' }
+    })
+  end
+end)
+```
+In summary, this code checks to make sure the Recipient and Quantity Tags have been provided, initializes the balances of the person sending the message and the Recipient if they dont exist and then attempts to transfer the specified quantity to the Recipient in the Balances table. If the transfer was successful a Debit-Notice is sent to the sender of the original message and a Credit-Notice is sent to the Recipient. If there was insufficient balance for the transfer it sends back a failure message. The line if not msg.Tags.Cast then Means were not producing any messages to push if the Cast tag was set. This is part of the ao protocol.

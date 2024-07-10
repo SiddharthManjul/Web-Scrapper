@@ -4,4 +4,12 @@ VestAO leverages blockchain technology and smart contracts to automate and manag
 
 ## Key Features
 ### Smart Contract Automation: 
-Smart Contracts ensure that vesting schedules and conditions are immutable and automatically enforced without the need for intermediaries. All transactions and vesting schedules are recorded on the blockchain providing transparency to all stakeholders.
+VestAO runs Smart Contracts which ensure that vesting schedules and conditions are immutable and automatically enforced without the need for intermediaries. All transactions and vesting schedules are recorded on the blockchain providing transparency to all stakeholders.
+### Customizable Vesting Schedules:
+It supports user-based scheduling which means that they can create their own scheduling, can start it anytime, can schedule it for future. Vesting conditions can be tied to specific milestones or performance metrics.
+### Token Management:
+Utilizes advanced token standards, such as Streaming Tokens, which extend basic AO Token standards, to facilitate continuous and dynamic asset streaming. Tokens are automatically distributed to beneficiaries according to the vesting schedule, reducing administrative overhead.
+### Employee Compensation:
+Automates the vesting of employee stock options, ensuring that employees receive their tokens according to predefined schedules. Manages various employee incentive programs, such as bonuses and performance-based rewards.
+### Investor Vesting:
+Manages the vesting of tokens for seed investors, ensuring that tokens are released gradually to prevent market dumping. Distributes tokens to crowdsale participants in a controlled manner, adhering to the terms of the sale.

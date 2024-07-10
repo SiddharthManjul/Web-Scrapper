@@ -20,7 +20,8 @@ Since the Streaming Tokens are extended version of basic AO Tokens. It operates 
 #### Info Handler:
 Info Handler provides the information about the Token. 
 
-```Handlers.add('info', Handlers.utils.hasMatchingTag('Action', 'Info'), function(msg)
+```Lua
+Handlers.add('info', Handlers.utils.hasMatchingTag('Action', 'Info'), function(msg)
   ao.send(
       { Target = msg.From, Tags = { Name = Name, Ticker = Ticker, Logo = Logo, Denomination = tostring(Denomination) } })
 end)

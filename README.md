@@ -121,3 +121,55 @@ Handlers.add('transfer', Handlers.utils.hasMatchingTag('Action', 'Transfer'), fu
 end)
 ```
 In summary, this code checks to make sure the Recipient and Quantity Tags have been provided, initializes the balances of the person sending the message and the Recipient if they dont exist and then attempts to transfer the specified quantity to the Recipient in the Balances table. If the transfer was successful a Debit-Notice is sent to the sender of the original message and a Credit-Notice is sent to the Recipient. If there was insufficient balance for the transfer it sends back a failure message. The line if not msg.Tags.Cast then Means were not producing any messages to push if the Cast tag was set. This is part of the ao protocol.
+#### CreateStream Handler
+This Handler initializes the stream by taking receiver's address, Streaming Token, Vesting Start Date, Vesting End Date as Input from the End User through Frontend.
+```Lua
+ Handlers.add('createStream', Handlers.utils.hasMatchingTag('Action', 'CreateStream'), function(msg)
+     assert(type(msg.Tags.Recipient) == 'string', 'Recipient is required!')
+     assert(type(msg.Tags.Quantity) == 'number', 'Quantity is required!')
+
+     -- local createStream = 
+     print(Colors.green .. StartTime)
+     Send({
+         Target = msg.Tags.From,
+         Tags = {
+             Recipient = msg.Tags.Recipient,
+             Quantity = msg.Tags.Quantity,
+             StartTime = DateTime,
+             EndTime = StartTime + 3600,
+             Data = 'Successfully Created Stream!'
+         }        
+     })
+     print(Colors.green .. "You have created a stream.")
+   end)
+```
+**1. Handlers.add('createStream', Handlers.utils.hasMatchingTag('Action', 'CreateStream'), function(msg)**
+Handlers.add: Adds a new handler for a specific action. In this case, the action is 'createStream'.
+Handlers.utils.hasMatchingTag('Action', 'CreateStream'): This utility function likely checks if the message (msg) has a tag Action with the value CreateStream.
+function(msg): Defines the function to be executed when a message with the matching tag is received.
+
+**2. assert(type(msg.Tags.Recipient) == 'string', 'Recipient is required!')**
+assert: Ensures a condition is true. If the condition is false, it throws an error with the provided message.
+type(msg.Tags.Recipient) == 'string': Checks if the Recipient tag in the message is a string. If not, it will trigger an error saying 'Recipient is required!'.
+
+**3. assert(type(msg.Tags.Quantity) == 'number', 'Quantity is required!')**
+Similar to the previous assertion, this line checks if the Quantity tag in the message is a number. If not, it will trigger an error saying 'Quantity is required!'.
+
+**4. print(Colors.green .. StartTime)**
+print: Outputs information to the console.
+Colors.green: Presumably a predefined color code for green text.
+StartTime: A variable that should have been defined elsewhere in the code, representing the start time of the stream. This line prints the start time in green text.
+
+**5. Send({ ... })**
+Send: Likely a function to send a message or response back to the sender.
+The message being sent includes:
+Target: The recipient of the message, taken from the From tag of the incoming message.
+Tags: A table (or object) containing:
+Recipient: The recipient of the stream, taken from the incoming message.
+Quantity: The quantity of the stream, taken from the incoming message.
+StartTime: The start time of the stream, presumably set elsewhere in the code.
+EndTime: The end time of the stream, calculated as StartTime + 3600 seconds (1 hour after the start time).
+Data: A message string saying 'Successfully Created Stream!'.
+
+**6. print(Colors.green .. "You have created a stream.")**
+This prints a success message in green text, indicating that a stream has been created.

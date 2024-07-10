@@ -13,3 +13,13 @@ Utilizes advanced token standards, such as Streaming Tokens, which extend basic 
 Automates the vesting of employee stock options, ensuring that employees receive their tokens according to predefined schedules. Manages various employee incentive programs, such as bonuses and performance-based rewards.
 ### Investor Vesting:
 Manages the vesting of tokens for seed investors, ensuring that tokens are released gradually to prevent market dumping. Distributes tokens to crowdsale participants in a controlled manner, adhering to the terms of the sale.
+
+## Technical Aspects:
+### Basic Token Specs:
+Since the Streaming Tokens are extended version of basic AO Tokens. It operates all the specs of AO Tokens which are "Info", "Balance", "Balances", "Transfer", and "Mint" in form of AO Hanlders.
+#### Info Handler:
+Info Handler provides the information about the Token. 
+```Handlers.add('info', Handlers.utils.hasMatchingTag('Action', 'Info'), function(msg)
+  ao.send(
+      { Target = msg.From, Tags = { Name = Name, Ticker = Ticker, Logo = Logo, Denomination = tostring(Denomination) } })
+end)```

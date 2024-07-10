@@ -1,10 +1,10 @@
-# VestAO
-VestAO is an asset streaming and distribution protocol bringing subscriptions, salaries, vesting, and rewards to DAOs and crypto-native businesses worldwide. This is made possible by the protocol’s smart contract framework which introduces the Streaming Token - an extension to the basic AO Token standard enabling the transfer of value in time-based manner.
-VestAO leverages blockchain technology and smart contracts to automate and manage the vesting of assets, such as tokens, for participants in various financial programs. This type of platform is particularly useful for DAOs (Decentralized Autonomous Organizations), crypto-native businesses, and projects that distribute tokens or other digital assets to contributors, investors, and employees.
+# AOVest
+AOVest is an asset streaming and distribution protocol bringing subscriptions, salaries, vesting, and rewards to DAOs and crypto-native businesses worldwide. This is made possible by the protocol’s smart contract framework which introduces the Streaming Token - an extension to the basic AO Token standard enabling the transfer of value in time-based manner.
+AOVest leverages blockchain technology and smart contracts to automate and manage the vesting of assets, such as tokens, for participants in various financial programs. This type of platform is particularly useful for DAOs (Decentralized Autonomous Organizations), crypto-native businesses, and projects that distribute tokens or other digital assets to contributors, investors, and employees.
 
 ## Key Features
 ### Smart Contract Automation: 
-VestAO runs Smart Contracts which ensure that vesting schedules and conditions are immutable and automatically enforced without the need for intermediaries. All transactions and vesting schedules are recorded on the blockchain providing transparency to all stakeholders.
+AOVest runs Smart Contracts which ensure that vesting schedules and conditions are immutable and automatically enforced without the need for intermediaries. All transactions and vesting schedules are recorded on the blockchain providing transparency to all stakeholders.
 ### Customizable Vesting Schedules:
 It supports user-based scheduling which means that they can create their own scheduling, can start it anytime, can schedule it for future. Vesting conditions can be tied to specific milestones or performance metrics.
 ### Token Management:
@@ -122,7 +122,7 @@ end)
 ```
 In summary, this code checks to make sure the Recipient and Quantity Tags have been provided, initializes the balances of the person sending the message and the Recipient if they dont exist and then attempts to transfer the specified quantity to the Recipient in the Balances table. If the transfer was successful a Debit-Notice is sent to the sender of the original message and a Credit-Notice is sent to the Recipient. If there was insufficient balance for the transfer it sends back a failure message. The line if not msg.Tags.Cast then Means were not producing any messages to push if the Cast tag was set. This is part of the ao protocol.
 #### CreateStream Handler
-This Handler initializes the stream by taking receiver's address, Streaming Token, Vesting Start Date, Vesting End Date as Input from the End User through Frontend.
+This Handler initializes the stream by taking receiver's address, Streaming Token, Vesting Start Date, Vesting End Date as Input from the End User through Frontend. The code sets up a handler for the 'createStream' action. When a message with the appropriate action tag is received, it checks for the presence and type of Recipient and Quantity tags. If these tags are valid, it prints the start time of the stream, sends a message back to the sender with the details of the created stream, and prints a success message.
 ```Lua
  Handlers.add('createStream', Handlers.utils.hasMatchingTag('Action', 'CreateStream'), function(msg)
      assert(type(msg.Tags.Recipient) == 'string', 'Recipient is required!')
@@ -144,32 +144,69 @@ This Handler initializes the stream by taking receiver's address, Streaming Toke
    end)
 ```
 **1. Handlers.add('createStream', Handlers.utils.hasMatchingTag('Action', 'CreateStream'), function(msg)**
-Handlers.add: Adds a new handler for a specific action. In this case, the action is 'createStream'.
-Handlers.utils.hasMatchingTag('Action', 'CreateStream'): This utility function likely checks if the message (msg) has a tag Action with the value CreateStream.
-function(msg): Defines the function to be executed when a message with the matching tag is received.
+**Handlers.add:** Adds a new handler for a specific action. In this case, the action is 'createStream'.
+**Handlers.utils.hasMatchingTag('Action', 'CreateStream'):** This utility function likely checks if the message (msg) has a tag Action with the value CreateStream.
+**function(msg):** Defines the function to be executed when a message with the matching tag is received.
 
 **2. assert(type(msg.Tags.Recipient) == 'string', 'Recipient is required!')**
-assert: Ensures a condition is true. If the condition is false, it throws an error with the provided message.
-type(msg.Tags.Recipient) == 'string': Checks if the Recipient tag in the message is a string. If not, it will trigger an error saying 'Recipient is required!'.
+**assert:** Ensures a condition is true. If the condition is false, it throws an error with the provided message.
+**type(msg.Tags.Recipient) == 'string':** Checks if the Recipient tag in the message is a string. If not, it will trigger an error saying 'Recipient is required!'.
 
 **3. assert(type(msg.Tags.Quantity) == 'number', 'Quantity is required!')**
 Similar to the previous assertion, this line checks if the Quantity tag in the message is a number. If not, it will trigger an error saying 'Quantity is required!'.
 
 **4. print(Colors.green .. StartTime)**
-print: Outputs information to the console.
-Colors.green: Presumably a predefined color code for green text.
-StartTime: A variable that should have been defined elsewhere in the code, representing the start time of the stream. This line prints the start time in green text.
+**print:** Outputs information to the console.
+**Colors.green:** Presumably a predefined color code for green text.
+**StartTime:** A variable that should have been defined elsewhere in the code, representing the start time of the stream. This line prints the start time in green text.
 
 **5. Send({ ... })**
-Send: Likely a function to send a message or response back to the sender.
+**Send:** Likely a function to send a message or response back to the sender.
 The message being sent includes: <br />
-Target: The recipient of the message, taken from the From tag of the incoming message.<br />
-Tags: A table (or object) containing:<br />
-Recipient: The recipient of the stream, taken from the incoming message.<br />
-Quantity: The quantity of the stream, taken from the incoming message.<br />
-StartTime: The start time of the stream, presumably set elsewhere in the code.<br />
-EndTime: The end time of the stream, calculated as StartTime + 3600 seconds (1 hour after the start time).<br />
-Data: A message string saying 'Successfully Created Stream!'.
+**Target:** The recipient of the message, taken from the From tag of the incoming message.<br />
+**Tags:** A table (or object) containing:<br />
+**Recipient:** The recipient of the stream, taken from the incoming message.<br />
+**Quantity:** The quantity of the stream, taken from the incoming message.<br />
+**StartTime:** The start time of the stream, presumably set elsewhere in the code.<br />
+**EndTime:** The end time of the stream, calculated as StartTime + 3600 seconds (1 hour after the start time).<br />
+**Data:** A message string saying 'Successfully Created Stream!'.
 
 **6. print(Colors.green .. "You have created a stream.")**
 This prints a success message in green text, indicating that a stream has been created.
+#### DistributeStream Handler:
+The distributeStream handler automates the process of distributing tokens or assets from a sender to a recipient based on a streaming protocol. It verifies the recipient's existence, calculates the amount to be distributed based on elapsed time and the stream rate, and updates the balances accordingly. If the sender has insufficient balance, it sends an error message back to the sender. If successful, it notifies both the sender and recipient of the distribution.
+```Lua
+ Handlers.add('distributeStream', Handlers.utils.hasMatchingTag('Action', 'DistributeStream'), function(msg)
+     assert(type(msg.Tags.Recipient) == 'string', 'Recipient is required!')
+  
+     local stream = Streams[msg.From] and Streams[msg.From][msg.Tags.Recipient]
+     assert(stream, 'Stream not found!')
+  
+     local elapsedTime = os.time() - stream.startTime
+     local distributedAmount = stream.rate * elapsedTime
+  
+     if Balances[msg.From] >= distributedAmount then
+       Balances[msg.From] = Balances[msg.From] - distributedAmount
+       Balances[msg.Tags.Recipient] = Balances[msg.Tags.Recipient] + distributedAmount
+       stream.startTime = os.time()
+  
+       Send({
+         Target = msg.From,
+         Tags = { Action = 'StreamDistributed', Recipient = msg.Tags.Recipient, Amount = tostring(distributedAmount) }
+       })
+       ao.send({
+         Target = msg.Tags.Recipient,
+         Tags = { Action = 'StreamReceived', Sender = msg.From, Amount = tostring(distributedAmount) }
+       })
+     else
+       ao.send({
+         Target = msg.From,
+         Tags = { Action = 'StreamDistributionError', Error = 'Insufficient Balance!' }
+       })
+     end
+   end)
+```
+**1. Handlers.add('distributeStream', Handlers.utils.hasMatchingTag('Action', 'DistributeStream'), function(msg)**
+**Handlers.add:** Adds a new handler for the action distributeStream.
+**Handlers.utils.hasMatchingTag('Action', 'DistributeStream'):** This utility function checks if the message (msg) has a tag Action with the value DistributeStream.
+**function(msg):** Defines the function to be executed when a message with the matching tag is received.

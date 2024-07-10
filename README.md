@@ -27,3 +27,31 @@ Handlers.add('info', Handlers.utils.hasMatchingTag('Action', 'Info'), function(m
 end)
 ```
 This code means that if someone Sends a message with the Tag, Action = "info", our token will Send back a message with all of the information defined above. Note the Target = msg.From, this tells ao we are replying to the process that sent us this message.
+#### Balance Handler:
+Balance Handler provides the token balance someone holds,
+
+```Lua
+Handlers.add('balance', Handlers.utils.hasMatchingTag('Action', 'Balance'), function(msg)
+  local bal = '0'
+
+  -- If not Target is provided, then return the Senders balance
+  if (msg.Tags.Target and Balances[msg.Tags.Target]) then
+    bal = tostring(Balances[msg.Tags.Target])
+  elseif Balances[msg.From] then
+    bal = tostring(Balances[msg.From])
+  end
+
+  ao.send({
+    Target = msg.From,
+    Tags = { Target = msg.From, Balance = bal, Ticker = Ticker, Data = json.encode(tonumber(bal)) }
+  })
+end)
+```
+The first Handler above Handlers.add('balance' handles a process or person requesting their own balance or the balance of a Target. Then replies with a message containing the info.
+#### Balances Handler:
+Balances Handler provides the entire Balance Table
+
+```Lua
+Handlers.add('balances', Handlers.utils.hasMatchingTag('Action', 'Balances'),
+             function(msg) ao.send({ Target = msg.From, Data = json.encode(Balances) }) end)
+```
